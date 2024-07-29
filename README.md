@@ -6,7 +6,6 @@ Traditional attention mechanisms in point cloud learning typically use a single 
 DPAttention combines global positional encoding to capture spatial relationships between neighborhoods with local positional encoding to address positional relationships within neighborhoods. This approach enables the model to effectively understand both the global geometric structure and the local details of the point cloud, thus enriching feature extraction through the attention mechanism.
 Building on DPAttention, we introduce DPAtteNet, a deep learning network designed for point cloud classification and segmentation. We evaluated DPAtteNet on the ModelNet40, ShapeNet Part, and S3DIS datasets. The experimental results confirm the effectiveness of our method.  
 
-### CCMNet deep learning network
 <div  align="center">    
  <img src="./figure/dpattenet.png" width = "666"  align=center />
 </div>
