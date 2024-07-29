@@ -1,0 +1,59 @@
+dataset:
+  common:
+    NAME: ShapeNetPartNormal
+    data_root: E:\datasets\shapenetcore_partanno_segmentation_benchmark_v0_normal
+    use_normal: True
+    num_points: 2048
+  train:
+    split: trainval
+  val:
+    split: test
+    presample: True
+
+num_classes: 50
+shape_classes: 16
+num_points: 2048
+normal_channel: True
+feature_keys: pos,x,heights
+
+datatransforms:
+  train: [PointsToTensor, PointCloudScaling,PointCloudCenterAndNormalize,PointCloudJitter,ChromaticDropGPU]
+  val: [PointsToTensor, PointCloudCenterAndNormalize]
+  vote: [PointCloudScaling]
+  kwargs:
+    jitter_sigma: 0.001
+    jitter_clip: 0.005
+    scale: [0.8, 1.2]
+    gravity_dim: 1
+    angle: [0, 1.0, 0]
+
+batch_size: 2 # 8
+dataloader:
+  num_workers: 0 # 6
+
+# ---------------------------------------------------------------------------- #
+# Evaluation cfgs
+# ---------------------------------------------------------------------------- #
+num_votes: 10 
+refine: True 
+
+# ---------------------------------------------------------------------------- #
+# Training cfgs
+# ---------------------------------------------------------------------------- #
+
+sched_on_epoch: True
+
+grad_norm_clip: 1
+use_voting: False
+
+# ---------------------------------------------------------------------------- #
+# io and misc
+# ---------------------------------------------------------------------------- #
+print_freq: 10
+val_freq: 1
+
+# ----------------- Model related
+pretrained_path: null 
+
+wandb:
+  project: DPAtteNet-ShapeNetPart
