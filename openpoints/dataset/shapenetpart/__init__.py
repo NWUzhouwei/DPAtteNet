@@ -1,0 +1,1 @@
+from .shapenetpart import ShapeNetPartNormal

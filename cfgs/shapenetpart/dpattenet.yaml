@@ -1,0 +1,67 @@
+model:
+  NAME: BasePartSeg
+  encoder_args:
+    NAME: DPAtteNetEncoder
+    blocks: [ 1, 1, 1, 1, 1] # 1, 1, 1, 2, 1 is better, but not the main focus of this paper
+    strides: [ 1, 2, 2, 2, 2 ] # [2048, 1024, 512, 256, 128]
+    width: 80 # 160 
+    in_channels: 7 # 7  # better than 4,6
+    sa_layers: 3  # better than 2 
+    sa_use_res: True
+    radius: 0.08 # 0.1
+    radius_scaling: 2 # 2.5
+    nsample: 28 # 32 # will not improve performance. 
+    expansion: 2 # 4
+    aggr_args:
+      feature_type: 'dp_fj'
+    reduction: 'max'
+    group_args:
+      NAME: 'ballquery'
+      normalize_dp: True
+    conv_args:
+      order: conv-norm-act
+    act_args:
+      act: 'relu' # leakrelu makes training unstable.
+    norm_args:
+      norm: 'bn'  # ln makes training unstable
+  decoder_args:
+    NAME: DPAtteNetPartDecoder
+    cls_map: curvenet
+  cls_args:
+    NAME: SegHead
+    global_feat: max,avg  # append global feature to each point feature
+    num_classes: 50
+    in_channels: null
+    norm_args:
+      norm: 'bn'
+
+
+# ---------------------------------------------------------------------------- #
+# Training cfgs
+# ---------------------------------------------------------------------------- #
+lr: 0.0001
+min_lr: 1.0e-6 # null
+optimizer:
+  NAME: adamw
+  weight_decay: 1.0e-5  # the best 
+
+criterion_args:
+  NAME: Poly1FocalLoss
+
+# scheduler
+epochs: 120 # 100 # 150 # 300
+sched: multistep # cosine # multistep
+decay_epochs: [55, 70, 110] # [60, 110, 140] # [210, 270]
+decay_rate: 0.2
+warmup_epochs: 0
+
+datatransforms:
+  train: [PointsToTensor, PointCloudScaling,PointCloudCenterAndNormalize,PointCloudJitter,ChromaticDropGPU]
+  val: [PointsToTensor, PointCloudCenterAndNormalize]
+  kwargs:
+    jitter_sigma: 0.001
+    jitter_clip: 0.005
+    scale: [0.8, 1.2]
+    gravity_dim: 1
+    angle: [0, 1.0, 0]
+
